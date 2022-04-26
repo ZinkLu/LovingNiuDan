@@ -1,0 +1,36 @@
+# login AWS and pull
+
+on:
+  push:
+    branches:
+    - nobranch
+    # - main
+    # - release/*
+
+name: Deploy to Amazon ECS
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-2
+
+    - name: executing remote ssh commands
+      uses: appleboy/ssh-action@master
+      with:
+        host: "18.118.206.71"
+        username: "ubuntu"
+        key: ${{ secrets.key }}
+        port: 22
+        script: cd /home/ubuntu/LovingNiuDan && git pull
